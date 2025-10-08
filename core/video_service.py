@@ -13,7 +13,7 @@ container = av.open("/dev/video0") # Adjust the path as necessary for your video
 r = redis.Redis(host='localhost', port=6379, db=0)
 
 
-# There is a bottleneck here, need to figure out how to optimize this
+# There is a bottleneck here, a delay of 5 seconds in the video. need to figure out how to optimize this
 # maybe use threading or multiprocessing or asyncio
 # or maybe use a faster serialization method like msgpack or protobuf
 # or maybe use a faster redis client like aioredis
