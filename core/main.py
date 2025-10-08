@@ -11,6 +11,8 @@ container = av.open("/dev/video0") # Adjust the path as necessary for your video
 for frame in container.decode(video=0):
     img = frame.to_ndarray(format='bgr24')
 
+    print(img)
+        
     cv2.imshow('Video', img)
 
     if cv2.waitKey(1) & 0xFF == ord('q'):
