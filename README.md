@@ -1,6 +1,8 @@
 # TRNG-FastAPI
 A true hardware random number generator. Inspired by Cloudflare's LavaRand
 
+# TODO
+- Clean requirements.txt
 
 - Using PyAV for low level control over stream raw data, if doesnt work move to OpenCV
 
