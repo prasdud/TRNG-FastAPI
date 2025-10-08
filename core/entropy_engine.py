@@ -16,3 +16,10 @@ for message in pubsub.listen():
         buffer = io.BytesIO(message['data'])
         frame = np.load(buffer)  # deserializing bytes back to numpy array
         print(frame)
+
+
+
+def F(X, Y):
+    # Placeholder for the actual function that combines X and Y to produce E
+    E = (X + Y) % 256  # Example operation, replace with a more complex one
+    return E
