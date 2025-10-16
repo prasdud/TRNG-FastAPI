@@ -6,6 +6,12 @@ A true hardware random number generator. Inspired by Cloudflare's LavaRand
 
 - Using PyAV for low level control over stream raw data, if doesnt work move to OpenCV
 
+- need to check any other wss streams available to have a list of working streams
+
+- implement pub sub for websockets.py
+
+- clean up directory, proper architecture
+
 
 ## Logic
 - First source of entropy X, a camera pointed towards large quantity of moving leaves. This raw rgb data will be used. Since its always moving, even small movements change the RGB value( right now it doesnt change the RGB value much, it varies but still in a range. I need to figure out can i make it even more varied)
@@ -15,3 +21,7 @@ A true hardware random number generator. Inspired by Cloudflare's LavaRand
 - We will do F(X, Y), where F is some mathematical computation that introduces confusion, where F(X, Y) produces E, Where E is raw data stream driven by pure environmental entropy 
 
 - This E will be exposed via an API that also has functionality for returning specific length of values. ex: /endpoint/return?size=10 returns 10 random numbers
+
+
+## Notes
+- normal ws (websocket) streams do not work with normal websocket implementations, but i found one wss which works ->  wss://3.radiorubka.org/~~stream?v=11
