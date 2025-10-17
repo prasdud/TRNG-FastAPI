@@ -14,7 +14,7 @@ WS_URL = "wss://3.radiorubka.org/~~stream?v=11"             # add all of these i
 #WS_URL = "wss://80m.radiorubka.org/~~stream?v=11"          # also some bands are better during daytime, research more on this
 #WS_URL = "ws://sdr.r9a.ru/~~stream?v=11"                  ----> this doesnt work. idk why
 
-#r = redis.Redis(host='localhost', port=6379, db=0)
+r = redis.Redis(host='localhost', port=6379, db=0)
 
 async def websocket_client():
     async with websockets.connect(WS_URL) as websocket:
@@ -22,6 +22,8 @@ async def websocket_client():
         while True:
             response = await websocket.recv()
             if isinstance(response, bytes):
+                # Send raw bytes to Redis stream
+                r.xadd('sdr_data_stream', {'iq': response})
                 binary_str = ''.join(f'{byte:08b}' for byte in response)
                 integer_value = int.from_bytes(response, byteorder='big')
                 print(f"Binary: {binary_str[:64]}...")  # Print first 64 bits

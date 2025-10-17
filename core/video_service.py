@@ -28,7 +28,8 @@ for frame in container.decode(video=0):
     print(' '.join(format(b, '08b') for b in img_binary[:32]))
 
     cv2.imshow('Video', img)
-    r.publish('video_data_stream', img_binary)  # publish binary data to redis channel
+    # Send binary data to a Redis stream instead of pub/sub
+    r.xadd('video_data_stream', {'frame': img_binary})
 
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
