@@ -19,17 +19,14 @@ r = redis.Redis(host='localhost', port=6379, db=0)
 # or maybe use a faster redis client like aioredis
 
 for frame in container.decode(video=0):
-    img = frame.to_ndarray(format='bgr24')
-
-    #print(img) # need to send this to entropy engine
+    img = frame.to_ndarray(format='bgr24')      # this hold the raw numpy array of the frame
     
     # serializing img to bytes, need to deserialize in entropy engine
     buffer = io.BytesIO()
     np.save(buffer, img)
-    img_bytes = buffer.getvalue()
+    img_bytes = buffer.getvalue()               # this holds serialized bytes of the numpy array
 
     print(img_bytes)
-
     cv2.imshow('Video', img)
     r.publish('video_data_stream', img_bytes) # publish raw bytes to redis channel
 
