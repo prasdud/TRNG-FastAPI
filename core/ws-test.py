@@ -2,6 +2,11 @@ import asyncio
 import websockets
 
 WS_URL = "wss://3.radiorubka.org/~~stream?v=11"
+#WS_URL = "wss://eshail.batc.org.uk/~~stream?v=11"
+#WS_URL = "wss://80m.radiorubka.org/~~stream?v=11"
+#WS_URL = "ws://sdr.r9a.ru/~~stream?v=11"                  ----> this doesnt work. idk why
+
+
 
 async def websocket_client():
     async with websockets.connect(WS_URL) as websocket:
