@@ -1,0 +1,5 @@
+L = 64
+lx = bit_length(x)
+ly = bit_length(y)
+E = (lx << (L + ly + lx)) | (ly << (lx + L)) | (x << ly) | y
+hM = truncate_bits(SHA256(E), M)
