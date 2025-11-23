@@ -4,9 +4,10 @@ Captures live raw IQ data from an SDR (Software Defined Radio) device and return
 '''
 
 import redis
-import numpy as np
 import asyncio
 import websockets
+from utils.logger import logger as log
+
 
 #first WS is best / fast
 WS_URL = "wss://3.radiorubka.org/~~stream?v=11"             # add all of these in a DS (list/dict) and rotate periodically, maybe base it on geoloc and switch to whichever one is on daytime
@@ -26,10 +27,10 @@ async def websocket_client():
                 r.xadd('sdr_data_stream', {'iq': response}, maxlen=100, approximate=True)
                 binary_str = ''.join(f'{byte:08b}' for byte in response)
                 integer_value = int.from_bytes(response, byteorder='big')
-                print(f"Binary: {binary_str[:64]}...")  # Print first 64 bits
-                print(f"Integer: {integer_value}")
+                log.info(f"Binary: {binary_str[:64]}...")  # Print first 64 bits
+                log.info(f"Integer: {integer_value}")
             else:
-                print(f"Received: {response}")
-
+                log.info(f"Received: {response}")
+                
 if __name__ == "__main__":
     asyncio.run(websocket_client())
