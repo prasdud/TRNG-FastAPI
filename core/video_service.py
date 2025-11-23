@@ -5,11 +5,11 @@ Captures live video from a webcam for now and returns raw video data stream as B
 
 import av
 import cv2
-import numpy as np
 import redis
-import io
+from utils.logger import logger as log
 
-container = av.open("/dev/video0") # Adjust the path as necessary for your video source
+
+container = av.open("/dev/video0") # 
 r = redis.Redis(host='localhost', port=6379, db=0)
 
 
@@ -21,15 +21,13 @@ r = redis.Redis(host='localhost', port=6379, db=0)
 for frame in container.decode(video=0):
     img = frame.to_ndarray(format='bgr24')      # raw numpy array of the frame
 
-    # Get binary equivalent of the frame
     img_binary = img.tobytes()                  # binary representation of the frame
 
-    # Print binary representation of each byte (first 32 bytes for brevity)
-    print(' '.join(format(b, '08b') for b in img_binary[:32]))
+    log.info('Video frame binary (first 32 bytes): ' + ' '.join(format(b, '08b') for b in img_binary[:32]))
 
     cv2.imshow('Video', img)
-    # Send binary data to a Redis stream instead of pub/sub
-    r.xadd('video_data_stream', {'frame': img_binary})
+    # Add with MAXLEN to keep only last 100 entries (prevents memory explosion)
+    r.xadd('video_data_stream', {'frame': img_binary}, maxlen=100, approximate=True)
 
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break

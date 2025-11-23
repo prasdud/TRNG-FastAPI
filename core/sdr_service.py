@@ -22,8 +22,8 @@ async def websocket_client():
         while True:
             response = await websocket.recv()
             if isinstance(response, bytes):
-                # Send raw bytes to Redis stream
-                r.xadd('sdr_data_stream', {'iq': response})
+                # Send raw bytes to Redis stream with MAXLEN to prevent memory explosion
+                r.xadd('sdr_data_stream', {'iq': response}, maxlen=100, approximate=True)
                 binary_str = ''.join(f'{byte:08b}' for byte in response)
                 integer_value = int.from_bytes(response, byteorder='big')
                 print(f"Binary: {binary_str[:64]}...")  # Print first 64 bits
