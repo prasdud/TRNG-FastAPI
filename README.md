@@ -2,16 +2,15 @@
 A true hardware random number generator. Inspired by Cloudflare's LavaRand
 
 # TODO
-- Clean requirements.txt
+- Implement proper redis cleanup on closing / error. It eats RAM rn
+- Complete performance optimization / overhaul. Go through codebase and remove redundant stuff
+- Mathematical randomness analysis, refer randomness-testing doc
+- Dockerize deployment, after User MVP done
 
-- Using PyAV for low level control over stream raw data, if doesnt work move to OpenCV
-
-- need to check any other wss streams available to have a list of working streams
-
-- implement pub sub for websockets.py
-
-- clean up directory, proper architecture
-
+# User MVP
+- API endpoint that provides random number, user provides space
+- Random color generator, takes 9 digit RN, wraps it in RGB, generates the color
+- Coin flipper, Binary RN
 
 ## Logic
 - First source of entropy X, a camera pointed towards large quantity of moving leaves. This raw rgb data will be used. Since its always moving, even small movements change the RGB value( right now it doesnt change the RGB value much, it varies but still in a range. I need to figure out can i make it even more varied)
