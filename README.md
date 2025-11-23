@@ -2,8 +2,8 @@
 A true hardware random number generator. Inspired by Cloudflare's LavaRand
 
 # TODO
-- Implement proper redis cleanup on closing / error. It eats RAM rn
 - Complete performance optimization / overhaul. Go through codebase and remove redundant stuff
+    - SDR stream is prone to websocket closing, add better handling entropy engine side, rn it just outputs None
 - Dockerize deployment, after User MVP done
 
 # User MVP
