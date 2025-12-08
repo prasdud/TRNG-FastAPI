@@ -6,6 +6,12 @@ A true hardware random number generator. Inspired by Cloudflare's LavaRand
     - SDR stream is prone to websocket closing, add better handling entropy engine side, rn it just outputs None
 - Dockerize deployment, after User MVP done
 
+# Running
+## Prerequisities
+- Python 3
+- Install requirements from requirements.txt
+- Redis
+
 # User MVP
 - API endpoint that provides random number, user provides space
 - Random color generator, takes 9 digit RN, wraps it in RGB, generates the color
