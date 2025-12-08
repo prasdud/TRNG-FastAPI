@@ -7,6 +7,12 @@ A true hardware random number generator. Inspired by Cloudflare's LavaRand
 - Mathematical randomness analysis, refer randomness-testing doc
 - Dockerize deployment, after User MVP done
 
+# Running
+## Prerequisities
+- Python 3
+- Install requirements from requirements.txt
+- Redis
+
 # User MVP
 - API endpoint that provides random number, user provides space
 - Random color generator, takes 9 digit RN, wraps it in RGB, generates the color

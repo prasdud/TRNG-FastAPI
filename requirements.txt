@@ -17,6 +17,7 @@ redis==6.4.0
 requests==2.32.5
 urllib3==2.5.0
 websocket==0.2.1
+websockets==15.0.1
 websocket-client==1.9.0
 zope.event==6.0
 zope.interface==8.0.1
