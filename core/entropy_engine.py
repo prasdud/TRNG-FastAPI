@@ -7,6 +7,7 @@ import redis
 import time
 import hashlib
 import utils.helpers as helpers
+import random
 
 r = redis.Redis(host='localhost', port=6379, db=0)
 duration = 1
@@ -107,11 +108,29 @@ if __name__ == "__main__":
     helpers.flush_redis_streams(r)
     counter = 0
 
+
     while True:
+        x_true_entropy_flag = True
+        y_true_entropy_flag = True
+    
         x = read_sdr_stream()
         y = read_video_stream()
+        if x is None:
+            x = random.getrandbits(256)
+            x_true_entropy_flag = False
+        if y is None:
+            y = random.getrandbits(256)
+            y_true_entropy_flag = False
+
         space = 10
 
         randomNumber = F(x, y, space)
         counter+=1
-        print(f"Generated Random Number {counter}: {randomNumber}")
+
+        if x_true_entropy_flag == False or y_true_entropy_flag == False:
+            true_entropy_flag = False
+        else:
+            true_entropy_flag = True
+
+        print(f"Generated Random Number {counter}: {randomNumber}\nTrue Entropy: {true_entropy_flag}\nIs SDR working?: {x_true_entropy_flag}\nIs Video working: {y_true_entropy_flag} ")
+        print("-"*69)
