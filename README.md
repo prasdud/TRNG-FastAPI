@@ -6,6 +6,9 @@ A true hardware random number generator. Inspired by Cloudflare's LavaRand
     - SDR stream is prone to websocket closing, add better handling entropy engine side, rn it just outputs None
 - Dockerize deployment, after User MVP done
 
+# Issues
+- Video service bottleneck: Bottleneck: Camera acquisition takes 69.5ms/frame 70% of time camera delivering 10 FPS instead of 30 FPS; remove cv2.imshow() (saves 20ms) and configure camera with options={'framerate': '30', 'video_size': '640x480'}
+
 # Running
 ## Prerequisities
 - Python 3

@@ -113,8 +113,14 @@ if __name__ == "__main__":
         x_true_entropy_flag = True
         y_true_entropy_flag = True
     
+        start_time_for_sdr = time.perf_counter()
         x = read_sdr_stream()
+        end_time_for_sdr = time.perf_counter()
+        
+        start_time_for_video = time.perf_counter()
         y = read_video_stream()
+        end_time_for_video = time.perf_counter()
+
         if x is None:
             x = random.getrandbits(256)
             x_true_entropy_flag = False
@@ -124,7 +130,10 @@ if __name__ == "__main__":
 
         space = 10
 
+        start_time_for_entropy_engine = time.perf_counter()
         randomNumber = F(x, y, space)
+        end_time_for_entropy_engine = time.perf_counter()
+
         counter+=1
 
         if x_true_entropy_flag == False or y_true_entropy_flag == False:
@@ -133,4 +142,7 @@ if __name__ == "__main__":
             true_entropy_flag = True
 
         print(f"Generated Random Number {counter}: {randomNumber}\nTrue Entropy: {true_entropy_flag}\nIs SDR working?: {x_true_entropy_flag}\nIs Video working: {y_true_entropy_flag} ")
+        print(f"Time taken for SDR stream: {end_time_for_sdr - start_time_for_sdr:.6f} seconds")
+        print(f"Time taken for Video stream: {end_time_for_video - start_time_for_video:.6f} seconds")
+        print(f"Time taken for Entropy Engine: {end_time_for_entropy_engine - start_time_for_entropy_engine:.6f} seconds")
         print("-"*69)
