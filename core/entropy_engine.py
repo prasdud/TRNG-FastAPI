@@ -4,21 +4,16 @@ Processes F(X, Y) -> E, where F is some computation and X and Y are entropy sour
 '''
 
 import redis
-import numpy as np
-import io
-import threading
 import time
 import hashlib
+import utils.helpers as helpers
+import random
+from utils.logger import logger as log
+
 
 r = redis.Redis(host='localhost', port=6379, db=0)
 duration = 1
 
-def flush_redis_streams():
-    try:
-        r.delete('sdr_data_stream', 'video_data_stream')
-        print("Flushed Redis streams")
-    except Exception as e:
-        print(f"Warning: Could not flush Redis: {e}")
 
 def read_video_stream():
     last_video_id = '$'  # Use '$' to read only NEW messages (not old ones)
@@ -34,7 +29,6 @@ def read_video_stream():
                 img_binary = msg_data[b'frame']
                 binary_str = ''.join(format(b, '08b') for b in img_binary[:32])
                 video_data.append(binary_str)
-                #print('[VIDEO]', binary_str)
     
     # binary string to integer
     if video_data:
@@ -43,7 +37,7 @@ def read_video_stream():
     return None
 
 def read_sdr_stream():
-    last_sdr_id = '$'  # Use '$' to read only NEW messages (not old ones)
+    last_sdr_id = '$'
     sdr_data = []
     end_time = time.perf_counter() + duration
     
@@ -56,7 +50,6 @@ def read_sdr_stream():
                 iq_binary = msg_data[b'iq']
                 binary_str = ''.join(format(b, '08b') for b in iq_binary[:32])
                 sdr_data.append(binary_str)
-                #print('[SDR]', binary_str)
     
     # binary string to integer
     if sdr_data:
@@ -64,34 +57,6 @@ def read_sdr_stream():
         return int(combined, 2)
     return None
 
-def bit_length(n):
-    if n == 0:
-        return 1
-    return n.bit_length()
-
-def truncate_to_decimal_length(hash_int, num_digits):
-    """
-    Truncate hash integer to a number with exactly num_digits decimal digits.
-    
-    Args:
-        hash_int: Integer from hash
-        num_digits: Desired number of decimal digits
-    
-    Returns:
-        Integer with exactly num_digits decimal digits (e.g., 5 digits -> 10000-99999)
-    """
-    if num_digits <= 0:
-        return 0
-    
-    # Define the range for the desired number of digits
-    min_val = 10 ** (num_digits - 1)  # e.g., 10000 for 5 digits
-    max_val = (10 ** num_digits) - 1   # e.g., 99999 for 5 digits
-    range_size = max_val - min_val + 1
-    
-    # Map hash_int to the desired range
-    result = (hash_int % range_size) + min_val
-    
-    return result
 
 def F(x, y, space):
     """
@@ -106,15 +71,15 @@ def F(x, y, space):
         Random number with exactly 'space' decimal digits
     """
     if x is None or y is None:
-        print("Error: Invalid entropy sources (None values)")
+        log.error("Error: Invalid entropy sources (None values)")
         return None
     
     # Constants
     L = 64
     
     # Calculate bit lengths
-    lx = bit_length(x)
-    ly = bit_length(y)
+    lx = helpers.bit_length(x)
+    ly = helpers.bit_length(y)
     
     #print(f"x bit length: {lx}, y bit length: {ly}")
     
@@ -135,28 +100,51 @@ def F(x, y, space):
     hash_int = int.from_bytes(hash_result, byteorder='big')
     
     # Truncate to desired decimal length
-    result = truncate_to_decimal_length(hash_int, space)
+    result = helpers.truncate_to_decimal_length(hash_int, space)
     
     #print(f"Generated {space}-digit random number: {result}")
     
     return result
 
 if __name__ == "__main__":
-    # Flush old data before starting
-    flush_redis_streams()
+    helpers.flush_redis_streams(r)
     counter = 0
-    # t1 = threading.Thread(target=read_video_stream, daemon=True)
-    # t2 = threading.Thread(target=read_sdr_stream, daemon=True)
-    # t1.start()
-    # t2.start()
-    # t1.join()
-    # t2.join()
+
 
     while True:
+        x_true_entropy_flag = True
+        y_true_entropy_flag = True
+    
+        start_time_for_sdr = time.perf_counter()
         x = read_sdr_stream()
+        end_time_for_sdr = time.perf_counter()
+        
+        start_time_for_video = time.perf_counter()
         y = read_video_stream()
+        end_time_for_video = time.perf_counter()
+
+        if x is None:
+            x = random.getrandbits(256)
+            x_true_entropy_flag = False
+        if y is None:
+            y = random.getrandbits(256)
+            y_true_entropy_flag = False
+
         space = 10
 
+        start_time_for_entropy_engine = time.perf_counter()
         randomNumber = F(x, y, space)
+        end_time_for_entropy_engine = time.perf_counter()
+
         counter+=1
-        print(f"Generated Random Number {counter}: {randomNumber}")
+
+        if x_true_entropy_flag == False or y_true_entropy_flag == False:
+            true_entropy_flag = False
+        else:
+            true_entropy_flag = True
+
+        log.info(f"Generated Random Number {counter}: {randomNumber}\nTrue Entropy: {true_entropy_flag}\nIs SDR working?: {x_true_entropy_flag}\nIs Video working: {y_true_entropy_flag} ")
+        log.info(f"Time taken for SDR stream: {end_time_for_sdr - start_time_for_sdr:.6f} seconds")
+        log.info(f"Time taken for Video stream: {end_time_for_video - start_time_for_video:.6f} seconds")
+        log.info(f"Time taken for Entropy Engine: {end_time_for_entropy_engine - start_time_for_entropy_engine:.6f} seconds")
+        log.info("-"*69)
