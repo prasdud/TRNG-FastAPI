@@ -8,6 +8,8 @@ import time
 import hashlib
 import utils.helpers as helpers
 import random
+from utils.logger import logger as log
+
 
 r = redis.Redis(host='localhost', port=6379, db=0)
 duration = 1
@@ -69,7 +71,7 @@ def F(x, y, space):
         Random number with exactly 'space' decimal digits
     """
     if x is None or y is None:
-        print("Error: Invalid entropy sources (None values)")
+        log.error("Error: Invalid entropy sources (None values)")
         return None
     
     # Constants
@@ -141,8 +143,8 @@ if __name__ == "__main__":
         else:
             true_entropy_flag = True
 
-        print(f"Generated Random Number {counter}: {randomNumber}\nTrue Entropy: {true_entropy_flag}\nIs SDR working?: {x_true_entropy_flag}\nIs Video working: {y_true_entropy_flag} ")
-        print(f"Time taken for SDR stream: {end_time_for_sdr - start_time_for_sdr:.6f} seconds")
-        print(f"Time taken for Video stream: {end_time_for_video - start_time_for_video:.6f} seconds")
-        print(f"Time taken for Entropy Engine: {end_time_for_entropy_engine - start_time_for_entropy_engine:.6f} seconds")
-        print("-"*69)
+        log.info(f"Generated Random Number {counter}: {randomNumber}\nTrue Entropy: {true_entropy_flag}\nIs SDR working?: {x_true_entropy_flag}\nIs Video working: {y_true_entropy_flag} ")
+        log.info(f"Time taken for SDR stream: {end_time_for_sdr - start_time_for_sdr:.6f} seconds")
+        log.info(f"Time taken for Video stream: {end_time_for_video - start_time_for_video:.6f} seconds")
+        log.info(f"Time taken for Entropy Engine: {end_time_for_entropy_engine - start_time_for_entropy_engine:.6f} seconds")
+        log.info("-"*69)

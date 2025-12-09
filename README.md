@@ -8,6 +8,8 @@ A true hardware random number generator. Inspired by Cloudflare's LavaRand
 
 # Issues
 - Video service bottleneck: Bottleneck: Camera acquisition takes 69.5ms/frame 70% of time camera delivering 10 FPS instead of 30 FPS; remove cv2.imshow() (saves 20ms) and configure camera with options={'framerate': '30', 'video_size': '640x480'}
+- Above issue sounds like he camera is lagging because every frame is writing to the redis stream at this line
+`r.xadd('video_data_stream', {'frame': img_binary}, maxlen=100, approximate=True)`
 
 # Running
 ## Prerequisities
