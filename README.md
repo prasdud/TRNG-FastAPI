@@ -1,6 +1,9 @@
 # TRNG-FastAPI
 A true hardware random number generator. Inspired by Cloudflare's LavaRand
 
+# Status, Dev Notes
+Work in progress. MVP is done. Currently being maintained Jan 2026
+
 # TODO
 - Complete performance optimization / overhaul. Go through codebase and remove redundant stuff
     - SDR stream is prone to websocket closing, add better handling entropy engine side, rn it just outputs None
